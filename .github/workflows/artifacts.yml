@@ -57,7 +57,9 @@ jobs:
         run: gh release create ${{ github.event.inputs.version }} -F release-notes.md -t ${{ github.event.inputs.version }}
       - name: Attache artifact to release
         if: github.event_name == 'workflow_dispatch'
-        run: gh release upload ${{ github.event.inputs.version }} artifact.zip
+        run: | 
+          gh release upload ${{ github.event.inputs.version }} artifact-abc.zip
+          gh release upload ${{ github.event.inputs.version }} artifact-def.zip
       - name: Update relase notes with atterstation
         if: github.event_name == 'workflow_dispatch'
         run: |
