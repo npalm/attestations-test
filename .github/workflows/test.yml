@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  test:
+  test1:
     runs-on: [ubuntu-latest]
     permissions:
       contents: read
@@ -17,6 +17,36 @@ jobs:
     defaults:
       run:
         shell: bash
+    steps:
+      - name: Checks
+        run: |
+          pwd
+          ls -la
+          ls -ld /opt
+          git config --list
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check permissions
+        run: |
+          pwd
+          ls -la
+          ls -ld /opt
+          git config --list
+
+  test1:
+    runs-on: [ubuntu-latest]
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    defaults:
+      run:
+      shell: bash
+
     steps:
       - name: Checks
         run: |
