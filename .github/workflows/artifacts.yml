@@ -1,9 +1,13 @@
 name: Artifacts
 on:
-  push:
-  pull_request:
   workflow_dispatch:
-
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        default: 'v1.0.0'
+  
+  
 
 jobs:
   artifact:
@@ -19,6 +23,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Generate makdown release notes
+        run: |
+          echo "## Release notes" > release-notes.md
+          echo "Version: ${{ github.event.inputs.version }}" >> release-notes.md
+          echo "Date: $(date)" >> release-notes.md
+          echo "Message: $(git log -1 --pretty=%B)" >> release-notes.md
       - name: Generate artifact
         run: |
           zip artifact.zip -r package.json
@@ -28,6 +38,18 @@ jobs:
           name: artifact.zip
           path: artifact.zip
       - name: Attest
+        id: attest
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: '${{ github.workspace }}/artifact.zip'
+      - name: Create relase
+        run: gh release create ${{ github.event.inputs.version }} -F release-notes.md -t ${{ github.event.inputs.version }}
+      - name: Attache artifact to release
+        run: gh release upload ${{ github.event.inputs.version }} artifact.zip
+      - name: Update relase notes with atterstation
+        run: |
+          # get release notes as markdown
+          gh release view ${{ github.event.inputs.version }} --json body -q '.body' > new-release-notes.md
+          # add atterstation ifnformation from step attest
+          echo "Attestation: ${{ steps.attest.outputs.attestation }}" >> new-release-notes.md
+          gh release edit ${{ github.event.inputs.version }} -F new-release-notes.md -t ${{ github.event.inputs.version }}
