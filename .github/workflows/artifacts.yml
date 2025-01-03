@@ -13,6 +13,8 @@ jobs:
       issues: read
       checks: write
       pull-requests: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Checkout
@@ -23,6 +25,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: test
+          name: artifact.zip
           path: artifact.zip
-
+      - name: Attest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: '${{ github.workspace }}/artifact.zip'
