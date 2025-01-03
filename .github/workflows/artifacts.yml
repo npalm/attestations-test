@@ -19,7 +19,6 @@ jobs:
       pull-requests: write
       id-token: write
       attestations: write
-      releases: write
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
